@@ -1,0 +1,58 @@
+#How to set up Swap file for compiling in Raspberry Pi 3
+
+sudo nano /etc/dphys-swapfile
+
+#Therefore, Uncomment the next line
+
+CONF_SWAPFILE=/where/is/mounted/usb/mySwap.file
+
+#And change the swap size to 2 GB or desired size
+
+CONF_SWAPSIZE=2048
+
+# SD corrupting is very frequently by the use of swap with SD, so is better to mount an external disk
+# Be sure to check where our system locates the device
+
+$ df -h
+$ tail -f /var/log/messages
+
+#Then, create a directory under /media to be able to mount your drive
+
+$ sudo mkdir /media/external
+
+# Then, mount it
+
+$ sudo mount -t vfat -o rw /dev/sda1 /media/external/
+
+# To unmount, simply:
+
+$ sudo unmount /media/external/
+
+# Then, let's create a swap file
+
+$ dd if=/dev/zero of=/media/external/mySwap.file bs=1M count=2048
+
+# It's better to set permissions
+
+$ chmod 60 /media/external/mySwap.file
+
+# Then create a swap size memory
+
+$ mkswap /media/external/mySwap.file
+$ swapon /media/external/mySwap.file
+
+#Finally, verify the swap size with
+
+$ free -h
+
+# After all, it's better to reboot all services related to swapping
+
+$ sudo /etc/init.d/dphys-swapfile stop
+$ sudo /etc/init.d/dphys-swapfile start
+
+
+
+
+Sources:
+http://raspi.tv/2012/mount-a-usb-flash-drive-on-raspberry-pi
+https://www.pyimagesearch.com/2017/10/09/optimizing-opencv-on-the-raspberry-pi/
